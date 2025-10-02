@@ -9,7 +9,7 @@
         name: nginx
         state: latest
         update_cache: yes
-    
+
     - name: Copy Nginx configuration file
       template:
         src: templates/web_nginx.conf.j2
@@ -18,17 +18,17 @@
         #group: root
         #mode: '0644'
       notify: Reload Nginx
-  
+
     - name: Install postgresql client
       apt:
         name: postgresql-client-14
-        state: present        
-    
+        state: present
+
     - name: Copy frontend build
       copy:
         src: ../week1/rhnatyshyn/flask
         dest: .
-    
+
     - name: Copy .env
       template:
         src: templates/.env.j2
@@ -38,7 +38,7 @@
       template:
         src: templates/flaskbird.service.j2
         dest: /etc/systemd/system/flaskbird.service
-        
+
     - name: Preconfigure and run Flask app
       shell: |
         cd flask
@@ -48,7 +48,7 @@
         source flasktest/bin/activate 
         pip install -r requirements.txt
         pip install flask flask_login flask_sqlalchemy flask_migrate psycopg2-binary gunicorn
-        
+
         sudo rm /home/vagrant/flask/birdproject/static
         sudo ln -s /vagrant /home/vagrant/flask/birdproject/static
         sudo systemctl start flaskbird
