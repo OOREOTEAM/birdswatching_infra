@@ -1,5 +1,0 @@
-[MESSAGES CONTROL]
-disable=C0115, C0116, C0114, C0304, C0411, C0103
-
-[MASTER]
-ignore-paths= rhnatyshyn/flask/birdproject/migrations
