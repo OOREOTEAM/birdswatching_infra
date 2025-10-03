@@ -26,5 +26,5 @@ module "jenkins_server" {
   source = "./modules/ec2"
   subnet_id = module.network.subnet_id_private
   SG_SubnetJenkins_id = module.security_group.SG_SubnetJenkins_id
-  servise_name = "Jenkins"
+  service_name = "Jenkins"
   }

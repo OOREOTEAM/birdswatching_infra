@@ -40,6 +40,6 @@ resource "aws_instance" "ec2_server" {
   user_data = file("./modules/ec2/install_jenkins.sh")
 
   tags = {
-    Name = var.servise_name
+    Name = var.service_name
   }
 }

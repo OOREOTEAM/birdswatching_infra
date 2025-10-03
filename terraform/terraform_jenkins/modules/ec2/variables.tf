@@ -16,4 +16,4 @@ variable "subnet_id" {}
 
 variable "SG_SubnetJenkins_id" {}
 
-variable "servise_name" {}
+variable "service_name" {}
