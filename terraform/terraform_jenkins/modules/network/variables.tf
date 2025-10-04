@@ -6,7 +6,7 @@ variable "vpc_cidr" {
 variable "vpc_name" {
   description = "VPC name"
   type        = string
-  default     = "Main-Jenkins-Consul"
+  default     = "Main-VPC"
 }
 
 variable "public_subnet_cidr" {
