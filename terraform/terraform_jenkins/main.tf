@@ -13,7 +13,7 @@ provider "aws" {
 }
 
 module "network" {
-    source = "./modules/network"
+  source = "./modules/network"
 }
 
 
@@ -23,8 +23,8 @@ module "security_group" {
 }
 
 module "jenkins_server" {
-  source = "./modules/ec2"
-  subnet_id = module.network.subnet_id_private
+  source              = "./modules/ec2"
+  subnet_id           = module.network.subnet_id_private
   SG_SubnetJenkins_id = module.security_group.SG_SubnetJenkins_id
-  service_name = "Jenkins"
-  }
+  service_name        = "Jenkins"
+}

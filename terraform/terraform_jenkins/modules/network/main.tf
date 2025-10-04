@@ -1,8 +1,8 @@
 #VPC
 resource "aws_vpc" "main_vpc" {
-  cidr_block = var.vpc_cidr
+  cidr_block       = var.vpc_cidr
   instance_tenancy = "default"
-  
+
   tags = {
     Name = var.vpc_name
   }
@@ -13,7 +13,7 @@ resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main_vpc.id
   cidr_block              = var.public_subnet_cidr
   map_public_ip_on_launch = true
-  availability_zone = "eu-central-1c"
+  availability_zone       = "eu-central-1c"
   tags = {
     Name = "public-subnet"
   }
@@ -21,8 +21,8 @@ resource "aws_subnet" "public" {
 
 #Private subnet
 resource "aws_subnet" "private" {
-  vpc_id     = aws_vpc.main_vpc.id
-  cidr_block = var.private_subnet_cidr
+  vpc_id            = aws_vpc.main_vpc.id
+  cidr_block        = var.private_subnet_cidr
   availability_zone = "eu-central-1c"
   tags = {
     Name = "private-subnet-Jenkins"
@@ -81,7 +81,7 @@ resource "aws_route_table" "rt_sub_private" {
   vpc_id = aws_vpc.main_vpc.id
 
   route {
-    cidr_block = "0.0.0.0/0"
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat.id
   }
 

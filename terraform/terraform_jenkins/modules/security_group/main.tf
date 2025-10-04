@@ -8,7 +8,7 @@ resource "aws_security_group" "SG_SubnetJenkins" {
       from_port   = ingress.value
       to_port     = ingress.value
       protocol    = "tcp"
-      cidr_blocks = var.team_ips  #need to change to private or team IPs
+      cidr_blocks = var.team_ips
     }
   }
 
@@ -16,7 +16,7 @@ resource "aws_security_group" "SG_SubnetJenkins" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"] 
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {

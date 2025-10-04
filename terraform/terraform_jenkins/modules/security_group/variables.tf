@@ -7,6 +7,7 @@ variable "allowed_ports" {
 }
 
 variable "team_ips" {
-  type = list(any)
-  default = ["0.0.0.0/0" ] #need to change
+  description = "The CIDR block for the private jenkins subnet"
+  type        = list(any)
+  default     = ["0.0.0.0/0"]
 }

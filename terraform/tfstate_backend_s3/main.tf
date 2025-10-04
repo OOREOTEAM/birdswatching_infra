@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = "~> 6.0"
     }
   }
 }
@@ -30,9 +30,9 @@ resource "aws_s3_bucket_versioning" "tfstate_versioning" {
 
 #DynamoDB table for state locking
 resource "aws_dynamodb_table" "jenkins_DT" {
-  name           = var.dynamodb_table_name
-  hash_key       = "LockID"
-  billing_mode   = "PAY_PER_REQUEST"
+  name         = var.dynamodb_table_name
+  hash_key     = "LockID"
+  billing_mode = "PAY_PER_REQUEST"
 
   attribute {
     name = "LockID"

@@ -4,6 +4,6 @@ terraform {
     key            = "jenkins/terraform.tfstate"
     region         = "eu-central-1"
     dynamodb_table = "jenkins_DT"
-    use_lockfile   = true 
+    use_lockfile   = true
   }
 }
