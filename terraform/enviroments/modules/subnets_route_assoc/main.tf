@@ -1,5 +1,5 @@
 # Using existing VPC for all resorses
-data "aws_vpc" "selected" {
+data "aws_vpc" "main" {
     id = var.vpc_id
 }
 
@@ -58,34 +58,39 @@ resource "aws_subnet" "private_consul" {
 }
 
 #--------------IGW
-resource "aws_internet_gateway" "main" {
-  vpc_id = var.vpc_id
+# resource "aws_internet_gateway" "main" {
+#   vpc_id = var.vpc_id
 
-  tags = {
-    Name        = "${var.environment}-IGW"
-    Environment = var.environment
+#   tags = {
+#     Name        = "${var.environment}-IGW"
+#     Environment = var.environment
+#   }
+# }
+
+data "aws_internet_gateway" "main" {
+  filter {
+    name   = "tag:Name"
+    values = ["IGW"]
   }
 }
 
-#Elastic IP for NAT
-resource "aws_eip" "nat" {
-  domain = "vpc"
-  tags = {
-    Name = "${var.environment}-nat-eip"
-  }
-}
+# data "aws_nat_gateway" "main" {
+#     filter {
+#     name   = "tag:Name"
+#     values = ["NAT-gateway"]
+#   }
+# }
 
-#NAT Gateway
+
+#NAT Gateway in private subnet 
 resource "aws_nat_gateway" "main" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public_lb.id
-
-  tags = {
+  connectivity_type = "private"
+  subnet_id         = aws_subnet.private_consul.id
+    tags = {
     Name        = "${var.environment}-nat-gateway"
     Environment = var.environment
   }
-
-  depends_on = [aws_internet_gateway.main]
+  depends_on = [data.aws_internet_gateway.main]
 }
 
 #------------Route tables and assosiation
@@ -96,7 +101,7 @@ resource "aws_route_table" "public" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id
+    gateway_id = data.aws_internet_gateway.main.id
   }
 
   tags = {
@@ -144,7 +149,7 @@ resource "aws_route_table" "private" {
   }
 }
 
-#Private role table association for WEB Consul  no NAT
+#Private role table association for WEB Consul цшер NAT
 resource "aws_route_table_association" "private_webapp_assoc" {
   subnet_id      = aws_subnet.private_webapp.id
   route_table_id = aws_route_table.private.id

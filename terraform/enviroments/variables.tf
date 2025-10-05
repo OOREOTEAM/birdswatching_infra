@@ -32,3 +32,13 @@ variable "private_consul_subnet_cidr" {
   description = "The CIDR block for the private consul subnet"
   type        = string
 }
+
+variable "ami_id" {
+  description = "The ami version"
+  type        = string
+}
+
+variable "instance_type" {
+  description = "The EC2 instance type. Includes Jenkins requirements"
+  type        = string
+}
