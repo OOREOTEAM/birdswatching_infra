@@ -11,7 +11,7 @@ http {
 
     server {
         listen 80;
-        //server_name lb.local;
+        #server_name lb.local;
 
         location / {
             proxy_pass http://webservers;
