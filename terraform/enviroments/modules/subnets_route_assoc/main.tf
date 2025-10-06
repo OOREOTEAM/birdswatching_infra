@@ -57,29 +57,13 @@ resource "aws_subnet" "private_consul" {
   }
 }
 
-#--------------IGW
-# resource "aws_internet_gateway" "main" {
-#   vpc_id = var.vpc_id
-
-#   tags = {
-#     Name        = "${var.environment}-IGW"
-#     Environment = var.environment
-#   }
-# }
-
+#Using existing IGW
 data "aws_internet_gateway" "main" {
   filter {
     name   = "tag:Name"
     values = ["IGW"]
   }
 }
-
-# data "aws_nat_gateway" "main" {
-#     filter {
-#     name   = "tag:Name"
-#     values = ["NAT-gateway"]
-#   }
-# }
 
 
 #NAT Gateway in private subnet 

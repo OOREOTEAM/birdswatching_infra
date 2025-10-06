@@ -42,5 +42,5 @@ module "EC2_instances" {
   private_webapp_subnet_id = module.Network.private_webapp_subnet_id
   public_lb_subnet_id = module.Network.public_lb_subnet_id
   private_db_subnet_id = module.Network.private_db_subnet_id
-  private_consul_subnet_id = module.Network.private_db_subnet_id
+  private_consul_subnet_id = module.Network.private_consul_subnet_id
 }

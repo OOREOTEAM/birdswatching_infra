@@ -19,7 +19,6 @@ resource "aws_launch_template" "webapp" {
   name_prefix   = "${var.environment}-webapp-"
   image_id      = var.ami_id
   instance_type = var.instance_type
-
   vpc_security_group_ids = [var.webapp_sg_id]
 
   tags = {
@@ -54,6 +53,19 @@ resource "aws_instance" "database" {
   instance_type = var.instance_type
   subnet_id     = var.private_db_subnet_id
   vpc_security_group_ids = [var.database_sg_id]
+
+    ebs_block_device {
+    device_name           = "/dev/sdc" #for EBS dara volumes
+    volume_size           = 1 
+    volume_type           = "gp3"
+    delete_on_termination = false #only for database to save volume after deletion
+    encrypted = true
+    tags = {
+    Name        = "${var.environment}-database-volume"
+    Environment = var.environment
+  }
+  
+  }
 
   tags = {
     Name        = "${var.environment}-database-instance"

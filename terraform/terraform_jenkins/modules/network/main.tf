@@ -54,7 +54,6 @@ resource "aws_nat_gateway" "nat" {
   }
 }
 
-
 #Route Table for public subnet
 resource "aws_route_table" "rt_sub_public" {
   vpc_id = aws_vpc.main_vpc.id
