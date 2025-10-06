@@ -55,5 +55,6 @@ stage('Ping EC2 via Ansible') {
 }
 }
 }
-
+}
+}
 }
