@@ -30,8 +30,8 @@ pipeline {
                 ]) { 
                     sh '''
                     export ANSIBLE_HOST_KEY_CHECKING=False
-                    ansible-inventory -i ansible/cloud_inventory.yml --graph
-                    ansible all -i ansible/cloud_inventory.yml -m ping -u ubuntu --private-key "$SSH_KEY"
+                    ansible-inventory -i ansible/aws_ec2.yml --graph
+                    ansible all -i ansible/aws_ec2.yml -m ping -u ubuntu --private-key "$SSH_KEY"
                     '''
                 }
             }
