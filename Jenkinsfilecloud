@@ -1,42 +1,43 @@
 pipeline {
     agent any
 
-  environment {
-        AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('aws_access_key_id')
         AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
-        AWS_DEFAULT_REGION = 'eu-central-1'
+        AWS_DEFAULT_REGION    = 'eu-central-1'
     }
 
     stages {
-   
-            stage('Clone repo via SSH') {
+
+        stage('Clone repo via SSH') {
             steps {
-                dir('flask'){
-                git branch: 'main',
-                    url: 'git@github.com:OOREOTEAM/birdswatching_app.git',
-                    credentialsId: '92ebdc9b-acc7-462a-b02d-abe695f18c40'
+                dir('flask') {
+                    git branch: 'main',
+                        url: 'git@github.com:OOREOTEAM/birdswatching_app.git',
+                        credentialsId: '92ebdc9b-acc7-462a-b02d-abe695f18c40'
+                }
             }
-         }
+        }
 
-
-            stage('Ping EC2 via Ansible') {
+        stage('Ping EC2 via Ansible') {
             steps {
-                    withCredentials([
-                            sshUserPrivateKey(
-                                credentialsId: 'oreo_ssh',
-                                keyFileVariable: 'SSH_KEY',
-                                usernameVariable: 'SSH_USER'
-                            )
-                        ]) { 
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'oreo_ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) { 
                     sh '''
-                    ansible-inventory -i ansible/cloud_inventory.yml --graph
                     export ANSIBLE_HOST_KEY_CHECKING=False
-                    ansible all -i ansible/cloud_inventory.yml -m ping -u ubuntu --private-key "$SSH_KEY" 
-                    // --limit _dev_webapp_asg_instance
+                    ansible-inventory -i ansible/cloud_inventory.yml --graph
+                    ansible all -i ansible/cloud_inventory.yml -m ping -u ubuntu --private-key "$SSH_KEY"
                     '''
                 }
+            }
+        }
 
-            stage('Configure vms in parallel') {
+        stage('Configure vms in parallel') {
             parallel {
                 stage('Configure lb') {
                     steps {
@@ -46,13 +47,12 @@ pipeline {
                             usernameVariable: 'SSH_USER'
                         )]) {
                             sh 'cd ansible && ansible-playbook -i /vagrant/inventory lb_install_nginx.yml --private-key $SSH_KEY'
-                      }
-                  }
+                        }
+                    }
                 }
+                
             }
         }
+
     }
-}
-}
-}
 }
