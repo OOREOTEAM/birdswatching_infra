@@ -17,9 +17,9 @@ pipeline {
                     credentialsId: '92ebdc9b-acc7-462a-b02d-abe695f18c40'
             }
          }
-}
 
-stage('Ping EC2 via Ansible') {
+
+            stage('Ping EC2 via Ansible') {
             steps {
                     withCredentials([
                             sshUserPrivateKey(
@@ -36,10 +36,7 @@ stage('Ping EC2 via Ansible') {
                     '''
                 }
 
-        
-
-
-        stage('Configure vms in parallel') {
+            stage('Configure vms in parallel') {
             parallel {
                 stage('Configure lb') {
                     steps {
@@ -52,8 +49,9 @@ stage('Ping EC2 via Ansible') {
                       }
                   }
                 }
-}
-}
+            }
+        }
+    }
 }
 }
 }
