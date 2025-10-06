@@ -5,13 +5,13 @@ events {
 http {
     upstream webservers {
         random;
-        server web.local;
+        server 10.0.4.76;
         
     }
 
     server {
         listen 80;
-        server_name lb.local;
+        //server_name lb.local;
 
         location / {
             proxy_pass http://webservers;
