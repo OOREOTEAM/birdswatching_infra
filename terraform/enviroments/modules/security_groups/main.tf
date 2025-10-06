@@ -1,10 +1,10 @@
 
 data "aws_vpc" "main" {
-    id = var.vpc_id
+  id = var.vpc_id
 }
 
 #Using existing Jenkins security group for Consul sg
-data "aws_security_group" "jenkins_sg"{
+data "aws_security_group" "jenkins_sg" {
   filter {
     name   = "tag:Name"
     values = ["Jenkins-Consul-SG"]
@@ -32,9 +32,9 @@ resource "aws_security_group" "nginx_lb" {
   }
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
     security_groups = [data.aws_security_group.jenkins_sg.id] #allow trafic from jenkins
   }
 
@@ -57,18 +57,18 @@ resource "aws_security_group" "webapp" {
   description = "Allow traffic from LB and to DB"
   vpc_id      = var.vpc_id
 
-  
+
   ingress {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
     security_groups = [aws_security_group.nginx_lb.id] #allow trafic from lb
   }
-  
+
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
     security_groups = [data.aws_security_group.jenkins_sg.id] #allow trafic from jenkins
   }
 
@@ -130,26 +130,26 @@ resource "aws_security_group" "consul" {
 
   # Allow Server RPC traffic for Consul internal communication with servers
   ingress {
-    description              = "Consul Server RPC"
-    from_port                = 8300
-    to_port                  = 8300
-    protocol                 = "tcp"
-    self                     = true
+    description = "Consul Server RPC"
+    from_port   = 8300
+    to_port     = 8300
+    protocol    = "tcp"
+    self        = true
   }
 
   # Allow LAN Serf for The Serf local area network port
   ingress {
-    description              = "Consul LAN Serf"
-    from_port                = 8301
-    to_port                  = 8301
-    protocol                 = "tcp"
-    self                     = true
+    description = "Consul LAN Serf"
+    from_port   = 8301
+    to_port     = 8301
+    protocol    = "tcp"
+    self        = true
   }
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
     security_groups = [data.aws_security_group.jenkins_sg.id]
   }
 
@@ -181,15 +181,15 @@ resource "aws_security_group" "database" {
     protocol        = "tcp"
     security_groups = [aws_security_group.webapp.id] #WebApp security group
   }
-      
-    ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+
+  ingress {
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
     security_groups = [data.aws_security_group.jenkins_sg.id]
   }
 
-    ingress {
+  ingress {
     description     = "Consul HTTP API"
     from_port       = 8500
     to_port         = 8500
@@ -197,15 +197,15 @@ resource "aws_security_group" "database" {
     security_groups = [aws_security_group.consul.id]
   }
 
-    ingress {
+  ingress {
     description     = "Consul DNC"
     from_port       = 8600
     to_port         = 8600
     protocol        = "tcp"
     security_groups = [aws_security_group.consul.id]
   }
-  
-  
+
+
   egress {
     from_port   = 0
     to_port     = 0

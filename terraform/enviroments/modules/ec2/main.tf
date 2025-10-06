@@ -16,9 +16,9 @@ resource "aws_instance" "nginx_lb" {
 
 #Creating webapp servers using launch templates for autoscaling
 resource "aws_launch_template" "webapp" {
-  name_prefix   = "${var.environment}-webapp-"
-  image_id      = var.ami_id
-  instance_type = var.instance_type
+  name_prefix            = "${var.environment}-webapp-"
+  image_id               = var.ami_id
+  instance_type          = var.instance_type
   vpc_security_group_ids = [var.webapp_sg_id]
 
   tags = {
@@ -49,22 +49,22 @@ resource "aws_autoscaling_group" "webapp" {
 
 #Creating DB server
 resource "aws_instance" "database" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  subnet_id     = var.private_db_subnet_id
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  subnet_id              = var.private_db_subnet_id
   vpc_security_group_ids = [var.database_sg_id]
 
-    ebs_block_device {
+  ebs_block_device {
     device_name           = "/dev/sdc" #for EBS dara volumes
-    volume_size           = 1 
+    volume_size           = 1
     volume_type           = "gp3"
     delete_on_termination = false #only for database to save volume after deletion
-    encrypted = true
+    encrypted             = true
     tags = {
-    Name        = "${var.environment}-database-volume"
-    Environment = var.environment
-  }
-  
+      Name        = "${var.environment}-database-volume"
+      Environment = var.environment
+    }
+
   }
 
   tags = {
@@ -75,9 +75,9 @@ resource "aws_instance" "database" {
 
 #Creating consul server
 resource "aws_instance" "consul" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  subnet_id     = var.private_consul_subnet_id
+  ami                    = var.ami_id
+  instance_type          = var.instance_type
+  subnet_id              = var.private_consul_subnet_id
   vpc_security_group_ids = [var.consul_sg_id]
 
   tags = {

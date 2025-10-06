@@ -1,6 +1,6 @@
 # Using existing VPC for all resorses
 data "aws_vpc" "main" {
-    id = var.vpc_id
+  id = var.vpc_id
 }
 
 #--------Subnets
@@ -70,7 +70,7 @@ data "aws_internet_gateway" "main" {
 resource "aws_nat_gateway" "main" {
   connectivity_type = "private"
   subnet_id         = aws_subnet.private_consul.id
-    tags = {
+  tags = {
     Name        = "${var.environment}-nat-gateway"
     Environment = var.environment
   }
