@@ -1,0 +1,56 @@
+- name: Setup Consul client
+  hosts: _dev_webapp_asg_instance  
+  become: yes
+  gather_facts: yes
+  vars:
+    consul_user: consul
+    consul_group: consul
+    consul_data_dir: /opt/consul/data
+    consul_server_ip: "{{ hostvars[groups['_dev_consul_instance'][0]]['private_ip']}}"
+
+  tasks:
+
+    - name: Ensure consul user exists
+      user:
+        name: "{{ consul_user }}"
+        shell: /bin/false
+        system: yes
+        state: present
+
+    - name: Ensure Consul data directory exists
+      file:
+        path: "{{ consul_data_dir }}"
+        state: directory
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '0755'
+
+    
+    - name: Deploy Consul client config
+      template:
+        src: templates/web.hcl.j2
+        dest: /etc/consul.d/web.hcl
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '0644'
+        state: present
+
+    - name: Deploy Consul systemd service
+      template:
+        src: templates/consul_web_agent.service.j2
+        dest: /etc/systemd/system/consul.service
+        owner: root
+        group: root
+        mode: '0644'
+        state: present
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+        state: reloaded
+
+    - name: Enable and start Consul
+      systemd:
+        name: consul
+        state: started
+        enabled: yes

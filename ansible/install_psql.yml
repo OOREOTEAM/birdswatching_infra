@@ -1,6 +1,6 @@
 ---
 - name: Install PostgreSQL 14
-  hosts: db
+  hosts: _dev_database_instance
   become: yes
 
   tasks:

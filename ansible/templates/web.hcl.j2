@@ -1,0 +1,17 @@
+node_name = "web-1"
+data_dir = "/opt/consul/data"
+server = false
+bind_addr = "{{ ansible_default_ipv4.address }}"
+retry_join = ["{{ consul_server_ip }}"]
+
+service {
+  name = "app"
+  port = 5000
+  tags = ["app"]
+  check {
+    name     = "App"
+    tcp      = "localhost:5000"
+    interval = "10s"
+    timeout  = "1s"
+  }
+}
