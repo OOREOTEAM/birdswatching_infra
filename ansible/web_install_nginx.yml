@@ -45,6 +45,7 @@
           - libffi-dev
           - python3-setuptools
           - python3-venv
+          - gunicorn
         state: present
         update_cache: yes
 
