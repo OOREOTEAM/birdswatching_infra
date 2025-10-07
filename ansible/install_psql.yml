@@ -4,10 +4,10 @@
   become: yes
 
   tasks:
-    - name: Install postgresql
-      apt:
-        name: postgresql-14
-        update_cache: yes
+    # - name: Install postgresql
+    #   apt:
+    #     name: postgresql-14
+    #     update_cache: yes
 
     - name: allow what IP address(es) to listen on;
       shell: sed -i "s/^#listen_addresses = 'localhost'/listen_addresses = '*'/" /etc/postgresql/14/main/postgresql.conf
