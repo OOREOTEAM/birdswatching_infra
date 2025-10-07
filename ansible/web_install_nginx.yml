@@ -22,7 +22,7 @@
     
     - name: Copy frontend build
       copy:
-        src: flask
+        src: ../flask
         dest: .
     
     - name: Copy .env
