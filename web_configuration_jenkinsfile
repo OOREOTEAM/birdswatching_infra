@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    stages {
+        
+        stage('common tasks') {
+            steps {
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: 'vagrantssh',
+                    keyFileVariable: 'SSH_KEY',
+                    usernameVariable: 'SSH_USER'
+                )]) {
+                    sh 'ansible --version'
+                    sh 'ssh -i $SSH_KEY -o StrictHostKeyChecking=no vagrant@web.local whoami'
+                }
+            }
+        }
+
+                stage('Configure web') {
+                     steps {
+                        withCredentials([
+                            string(credentialsId: 'dbuser', variable: 'DB_USER'),
+                            string(credentialsId: 'dbpass', variable: 'DB_PASS'),
+                            string(credentialsId: 'dbname', variable: 'DB_NAME'),
+                            string(credentialsId: 'default_flask_adminpass', variable: 'FLASK_PASS'),
+                            sshUserPrivateKey(
+                                credentialsId: 'vagrantssh',
+                                keyFileVariable: 'SSH_KEY',
+                                usernameVariable: 'SSH_USER'
+                            )
+                        ]) {
+                        sh '''
+                            cd ansible && ansible-playbook -i /vagrant/inventory web_install_nginx.yml \
+                            --private-key "$SSH_KEY" \
+                            -e "db_user=${DB_USER}" \
+                            -e "db_pass=${DB_PASS}" \
+                            -e "db_name=${DB_NAME}" \
+                            -e "flask_pass=${FLASK_PASS}" \
+                            '''
+                      }
+                  }
+                }
+    }
+}
