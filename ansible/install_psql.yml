@@ -6,30 +6,58 @@
   tasks:
     - name: Install postgresql
       apt:
-        name: postgresql-14
+        name:
+          - postgresql-14
+          - python3-psycopg2
+        state: present
         update_cache: yes
 
     - name: allow what IP address(es) to listen on;
-      shell: sed -i "s/^#listen_addresses = 'localhost'/listen_addresses = '*'/" /etc/postgresql/14/main/postgresql.conf
+      ansible.builtin.lineinfile:
+        path: /etc/postgresql/14/main/postgresql.conf
+        regexp: '^#?listen_addresses ='
+        line: "listen_addresses = '*'"
+      notify: Restart postgresql
 
     - name: allows authentication for all users connecting to all databases from any IPv4 address (0.0.0.0/0)
-      shell: sed -i '$a host    all             all             0.0.0.0/0         md5' /etc/postgresql/14/main/pg_hba.conf
+      ansible.builtin.lineinfile:
+        path: /etc/postgresql/14/main/pg_hba.conf
+        insertafter: EOF
+        line: 'host    all             all             0.0.0.0/0               md5'
+      notify: Restart postgresql
 
-    - name: restart postgresql
-      shell: systemctl restart postgresql
+    - name: allow local postgres user authentication via password
+      ansible.builtin.lineinfile:
+        path: /etc/postgresql/14/main/pg_hba.conf
+        insertafter: EOF
+        line: 'local   all             postgres                                md5'
+      notify: Restart postgresql
 
-    - name: drop db
-      shell: sudo -i -u postgres psql -c "DROP DATABASE {{ db_name }};"
-      #shell: ls
-    - name: drop user
-      shell: sudo -i -u postgres psql -c "DROP USER {{ db_user }};"
-      #shell: ls
+    - name: Ensure PostgreSQL is running
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
 
-    - name: create db
-      shell: sudo -i -u postgres psql -c "CREATE DATABASE {{ db_name }};"
+    - name: Create PostgreSQL database
+      postgresql_db:
+        name: '{{ db_name }}'
+        state: present
+      become: yes
+      become_user: postgres
 
-    - name: create user/password
-      shell: sudo -i -u postgres psql -c "CREATE USER {{ db_user }} WITH ENCRYPTED PASSWORD '{{ db_pass }}';"
+    - name: Create PostgreSQL user db_user
+      postgresql_user:
+        name: '{{ db_user }}'
+        password: '{{ db_pass }}'
+        db: '{{ db_name }}'
+        priv: 'ALL'
+        state: present
+      become: yes
+      become_user: postgres
 
-    - name: put rights on database
-      shell: sudo -i -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE {{ db_name }} TO {{ db_user }};"
+  handlers:
+    - name: Restart postgresql
+      service:
+        name: postgresql
+        state: restarted
