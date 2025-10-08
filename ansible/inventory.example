@@ -1,4 +1,9 @@
-# should be placed in shared folder /vagrant
+[loadbalancers]
 lb ansible_ssh_user=vagrant ansible_ssh_host=lb.local ansible_ssh_port=22 
-web ansible_ssh_user=vagrant ansible_ssh_host=web.local ansible_ssh_port=22
+
+[web_servers]
+web1 ansible_ssh_user=vagrant ansible_ssh_host=web.local ansible_ssh_port=22
+web2 ansible_ssh_user=vagrant ansible_ssh_host=web2.local ansible_ssh_port=22
+
+[databases]
 db ansible_ssh_user=vagrant ansible_ssh_host=db.local ansible_ssh_port=22
