@@ -1,6 +1,6 @@
 ---
 - name: Install and configure nginx + postgresql client
-  hosts: web
+  hosts: web_servers
   become: yes
 
   tasks:
@@ -14,9 +14,6 @@
       template:
         src: templates/web_nginx.conf.j2
         dest: /etc/nginx/nginx.conf
-        #owner: root
-        #group: root
-        #mode: '0644'
       notify: Reload Nginx
 
     - name: Install postgresql client
