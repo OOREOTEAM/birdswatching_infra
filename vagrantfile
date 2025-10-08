@@ -98,13 +98,4 @@ end
     
   end
 
-
-    config.ansible.groups = {
-      "lb"  => ["lb"],
-      "ops" => ["ops"],
-      "web" => ["web"],
-      "web2" => ["web2"],
-      "db" => ["db"],
-    }
-#  end
 end
