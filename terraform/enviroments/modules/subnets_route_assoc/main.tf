@@ -65,11 +65,22 @@ data "aws_internet_gateway" "main" {
   }
 }
 
+#Elastic IP
+resource "aws_eip" "nat_eip" {
+  domain     = "vpc"
+  depends_on = [data.aws_internet_gateway.main]
+    tags = {
+    Name        = "${var.environment}-nat-eip"
+    Environment = var.environment
+  }
+}
+
 
 #NAT Gateway in private subnet 
 resource "aws_nat_gateway" "main" {
-  connectivity_type = "private"
-  subnet_id         = aws_subnet.private_consul.id
+ // connectivity_type = "private"
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id         = aws_subnet.public_lb.id
   tags = {
     Name        = "${var.environment}-nat-gateway"
     Environment = var.environment

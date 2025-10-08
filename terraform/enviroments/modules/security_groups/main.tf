@@ -116,7 +116,7 @@ resource "aws_security_group" "consul" {
     from_port       = 8500
     to_port         = 8500
     protocol        = "tcp"
-    security_groups = [aws_security_group.webapp.id]
+    cidr_blocks     = [data.aws_vpc.main.cidr_block]
   }
 
   # Allow HTTPS API  access from the WebApp instances
@@ -125,7 +125,7 @@ resource "aws_security_group" "consul" {
     from_port       = 8501
     to_port         = 8501
     protocol        = "tcp"
-    security_groups = [aws_security_group.webapp.id]
+    cidr_blocks = [data.aws_vpc.main.cidr_block]
   }
 
   # Allow Server RPC traffic for Consul internal communication with servers
@@ -134,7 +134,7 @@ resource "aws_security_group" "consul" {
     from_port   = 8300
     to_port     = 8300
     protocol    = "tcp"
-    self        = true
+    cidr_blocks = [data.aws_vpc.main.cidr_block]
   }
 
   # Allow LAN Serf for The Serf local area network port
@@ -143,7 +143,7 @@ resource "aws_security_group" "consul" {
     from_port   = 8301
     to_port     = 8301
     protocol    = "tcp"
-    self        = true
+    cidr_blocks = [data.aws_vpc.main.cidr_block]
   }
 
   ingress {
@@ -219,9 +219,8 @@ resource "aws_security_group" "database" {
   }
 }
 
-#Using separate security groups to fix issue with cycle
 
-#Allow access consul to ld
+#Allow access consul to lb
 resource "aws_security_group_rule" "consul_to_nginx_http" {
   type                     = "ingress"
   security_group_id        = aws_security_group.nginx_lb.id
@@ -231,13 +230,40 @@ resource "aws_security_group_rule" "consul_to_nginx_http" {
   protocol                 = "tcp"
 }
 
-#Allow access consul to webapp
 resource "aws_security_group_rule" "consul_to_nginx_dnc" {
   type                     = "ingress"
   security_group_id        = aws_security_group.nginx_lb.id
   source_security_group_id = aws_security_group.consul.id
   from_port                = 8600
   to_port                  = 8600
+  protocol                 = "tcp"
+}
+
+resource "aws_security_group_rule" "consul_to_nginx_https" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.nginx_lb.id
+  source_security_group_id = aws_security_group.consul.id
+  from_port                = 8501
+  to_port                  = 8501
+  protocol                 = "tcp"
+}
+
+resource "aws_security_group_rule" "consul_to_nginx_lan" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.nginx_lb.id
+  source_security_group_id = aws_security_group.consul.id
+  from_port                = 8301
+  to_port                  = 8301
+  protocol                 = "tcp"
+}
+
+
+resource "aws_security_group_rule" "consul_to_nginx_rpc" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.nginx_lb.id
+  source_security_group_id = aws_security_group.consul.id
+  from_port                = 8300
+  to_port                  = 8300
   protocol                 = "tcp"
 }
 
@@ -252,6 +278,15 @@ resource "aws_security_group_rule" "consul_to_webapp_http" {
   protocol                 = "tcp"
 }
 
+resource "aws_security_group_rule" "consul_to_webapp_https" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.webapp.id
+  source_security_group_id = aws_security_group.consul.id
+  from_port                = 8501
+  to_port                  = 8501
+  protocol                 = "tcp"
+}
+
 resource "aws_security_group_rule" "consul_to_webapp_dnc" {
   type                     = "ingress"
   security_group_id        = aws_security_group.webapp.id
@@ -261,3 +296,48 @@ resource "aws_security_group_rule" "consul_to_webapp_dnc" {
   protocol                 = "tcp"
 }
 
+resource "aws_security_group_rule" "consul_to_webapp_rpc" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.webapp.id
+  source_security_group_id = aws_security_group.consul.id
+  from_port                = 8300
+  to_port                  = 8300
+  protocol                 = "tcp"
+}
+
+resource "aws_security_group_rule" "consul_to_webapp_lan" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.webapp.id
+  source_security_group_id = aws_security_group.consul.id
+  from_port                = 8301
+  to_port                  = 8301
+  protocol                 = "tcp"
+}
+
+#Allow access consul to db
+resource "aws_security_group_rule" "consul_to_db_https" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.database.id
+  source_security_group_id = aws_security_group.consul.id
+  from_port                = 8501
+  to_port                  = 8501
+  protocol                 = "tcp"
+}
+
+resource "aws_security_group_rule" "consul_to_db_rpc" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.database.id
+  source_security_group_id = aws_security_group.consul.id
+  from_port                = 8300
+  to_port                  = 8300
+  protocol                 = "tcp"
+}
+
+resource "aws_security_group_rule" "consul_to_db_lan" {
+  type                     = "ingress"
+  security_group_id        = aws_security_group.database.id
+  source_security_group_id = aws_security_group.consul.id
+  from_port                = 8301
+  to_port                  = 8301
+  protocol                 = "tcp"
+}

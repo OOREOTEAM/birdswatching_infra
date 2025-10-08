@@ -3,6 +3,12 @@ variable "ami_id" {
   type        = string
 }
 
+
+variable "ami_id_db" {
+  description = "The ami version with Postgre installed"
+  type        = string
+}
+
 variable "instance_type" {
   description = "The EC2 instance type. Includes Jenkins requirements"
   type        = string
@@ -56,4 +62,19 @@ variable "consul_sg_id" {
 variable "private_consul_subnet_id" {
   description = "Consul private subnet id"
   type        = string
+}
+
+variable "webapp_profile_name" {
+  description = "The name of instance_profile to attach S3 and SSM policy to web instances"
+  type = string
+}
+
+variable "ssm_instance_profile_name" {
+  description = "The name of instance_profile to attach SSM policy to all instances"
+  type = string
+}
+
+variable "key_name" {
+  description = "Key pair to attach to ec2 instanse, to have shh connection"
+  type = string
 }

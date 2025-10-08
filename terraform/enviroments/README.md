@@ -22,7 +22,7 @@ It uses modules from the `modules/` directory to build the infrastructure.
 Deploying the `dev` Environment (\*note this is an example, team shoud use Jenkins for deployment )
 
 Initialize Terraform:
-This only needs to be done once per environment. It configures the backend to point to the correct state file.
+It configures the backend to point to the correct state file
 
 ```bash
 terraform init -backend-config="key=dev/terraform.tfstate

@@ -2,10 +2,12 @@
 
 resource "aws_instance" "nginx_lb" {
   ami                         = var.ami_id
-  instance_type               = "t3.micro"
+  instance_type               = var.instance_type
   subnet_id                   = var.public_lb_subnet_id
   vpc_security_group_ids      = [var.nginx_lb_sg_id]
   associate_public_ip_address = true
+  iam_instance_profile        = var.ssm_instance_profile_name
+  key_name                    = var.key_name
 
   tags = {
     Name        = "${var.environment}-nginx-load-balancer"
@@ -20,6 +22,11 @@ resource "aws_launch_template" "webapp" {
   image_id               = var.ami_id
   instance_type          = var.instance_type
   vpc_security_group_ids = [var.webapp_sg_id]
+  key_name               = var.key_name
+
+   iam_instance_profile {
+    name = var.webapp_profile_name
+  }
 
   tags = {
     Name        = "${var.environment}-webapp-instance"
@@ -49,10 +56,12 @@ resource "aws_autoscaling_group" "webapp" {
 
 #Creating DB server
 resource "aws_instance" "database" {
-  ami                    = var.ami_id
+  ami                    = var.ami_id_db
   instance_type          = var.instance_type
   subnet_id              = var.private_db_subnet_id
   vpc_security_group_ids = [var.database_sg_id]
+  iam_instance_profile   = var.ssm_instance_profile_name
+  key_name               = var.key_name
 
   ebs_block_device {
     device_name           = "/dev/sdc" #for EBS dara volumes
@@ -79,6 +88,8 @@ resource "aws_instance" "consul" {
   instance_type          = var.instance_type
   subnet_id              = var.private_consul_subnet_id
   vpc_security_group_ids = [var.consul_sg_id]
+  iam_instance_profile   = var.ssm_instance_profile_name
+  key_name               = var.key_name
 
   tags = {
     Name        = "${var.environment}-consul-instance"

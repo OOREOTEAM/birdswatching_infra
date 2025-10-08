@@ -1,5 +1,5 @@
 variable "environment" {
-  description = "The deployment environment DEV/STAGE."
+  description = "The deployment environment dev/stage"
   type        = string
 }
 
@@ -38,7 +38,18 @@ variable "ami_id" {
   type        = string
 }
 
+variable "ami_id_db" {
+  description = "The ami version with Postgre installed"
+  type        = string
+}
+
+
 variable "instance_type" {
   description = "The EC2 instance type. Includes Jenkins requirements"
   type        = string
+}
+
+variable "key_name" {
+  description = "Key pair to attach to ec2 instanse, to have shh connection"
+  type = string
 }
