@@ -11,9 +11,6 @@
 crash.log
 
 
-*.tfvars
-
-
 # Saved plan files
 *.tfplan
 
