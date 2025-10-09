@@ -9,23 +9,23 @@
         name: nginx
         state: latest
         update_cache: yes
-    
+
     - name: Copy Nginx configuration file
       template:
         src: templates/web_nginx.conf.j2
         dest: /etc/nginx/nginx.conf
       notify: Reload Nginx
-  
+
     - name: Install postgresql client
       apt:
         name: postgresql-client-14
-        state: present        
-    
+        state: present
+
     - name: Copy frontend build
       copy:
         src: ../week1/rhnatyshyn/flask
         dest: .
-    
+
     - name: Copy .env
       template:
         src: templates/.env.j2
@@ -53,11 +53,10 @@
     - name: Create venv and install requirements.txt
       ansible.builtin.pip:
         requirements: /home/vagrant/flask/requirements.txt
-        virtualenv: /home/vagrant/flask/flasktest 
+        virtualenv: /home/vagrant/flask/flasktest
         virtualenv_command: python3 -m venv flasktest
       become: yes
 
-    
     - name: Create symlink for static folder
       ansible.builtin.file:
         src: /vagrant
@@ -72,14 +71,13 @@
       service:
         name: flaskbird
         state: started
-    
+
     - name: Change ownership of virtualenv
       ansible.builtin.file:
         path: /home/vagrant/flask/flasktest
         owner: vagrant
         group: vagrant
         recurse: yes
-
 
   handlers:
     - name: Reload Nginx
