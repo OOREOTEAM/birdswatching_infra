@@ -50,7 +50,6 @@ resource "aws_security_group" "consul" {
     cidr_blocks = [data.aws_vpc.main.cidr_block]
   }
 
-  # Allow HTTP API access from the WebApp instances
   ingress {
     description = "Consul HTTP API"
     from_port   = 8500
@@ -59,7 +58,6 @@ resource "aws_security_group" "consul" {
     cidr_blocks = [data.aws_vpc.main.cidr_block]
   }
 
-  # Allow HTTPS API  access from the WebApp instances
   ingress {
     description = "Consul HTTPS API"
     from_port   = 8501
@@ -68,7 +66,6 @@ resource "aws_security_group" "consul" {
     cidr_blocks = [data.aws_vpc.main.cidr_block]
   }
 
-  # Allow Server RPC traffic for Consul internal communication with servers
   ingress {
     description = "Consul Server RPC"
     from_port   = 8300
@@ -77,7 +74,6 @@ resource "aws_security_group" "consul" {
     cidr_blocks = [data.aws_vpc.main.cidr_block]
   }
 
-  # Allow LAN Serf for The Serf local area network port
   ingress {
     description = "Consul LAN Serf"
     from_port   = 8301
