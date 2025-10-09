@@ -2,20 +2,6 @@ pipeline {
     agent any
 
     stages {
-        
-        stage('common tasks') {
-            steps {
-                withCredentials([sshUserPrivateKey(
-                    credentialsId: 'vagrantssh',
-                    keyFileVariable: 'SSH_KEY',
-                    usernameVariable: 'SSH_USER'
-                )]) {
-                    sh 'ansible --version'
-                    sh 'ssh -i $SSH_KEY -o StrictHostKeyChecking=no vagrant@web.local whoami'
-                }
-            }
-        }
-
                 stage('Configure web') {
                      steps {
                         withCredentials([
