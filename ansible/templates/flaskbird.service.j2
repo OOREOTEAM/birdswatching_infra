@@ -4,11 +4,11 @@ After=network.target
 
 
 [Service]
-User=vagrant
-Group=vagrant
-WorkingDirectory=/home/vagrant/flask
-Environment="PATH=/home/vagrant/flask/flasktest/bin"
-ExecStart=/home/vagrant/flask/flasktest/bin/gunicorn --workers 4 --bind 127.0.0.1:5000 "birdproject:create_app()"
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/flask
+Environment="PATH=/home/ubuntu/flask/flasktest/bin"
+ExecStart=/home/ubuntu/flask/flasktest/bin/gunicorn --workers 4 --bind 127.0.0.1:5000 "birdproject:create_app()"
 
 
 [Install]
