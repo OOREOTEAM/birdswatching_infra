@@ -1,6 +1,6 @@
 ---
 - name: Install and configure nginx
-  hosts: _dev_nginx_load-balancer
+  hosts: _dev_nginx_load_balancer
   become: yes
 
   tasks:
