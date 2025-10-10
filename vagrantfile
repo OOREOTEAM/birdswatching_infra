@@ -68,6 +68,20 @@ end
 
  end
 
+# web2 VM
+  config.vm.define "web2" do |web2|
+    web2.vm.box = BASE_BOX
+    web2.vm.hostname = "web2.local"
+    web2.vm.network "private_network", type: "dhcp"
+ web2.vm.provision "shell" do |s|
+ssh_pub_key = File.readlines("key/intern.pub").first.strip
+s.inline = <<-SHELL
+echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
+SHELL
+end
+
+ end
+
  # test VM
   config.vm.define "test" do |test|
     test.vm.box = BASE_BOX
@@ -84,13 +98,4 @@ end
     
   end
 
-
-    config.ansible.groups = {
-      "lb"  => ["lb"],
-      "ops" => ["ops"],
-      "web" => ["web"],
-      "db" => ["db"],
-
-    }
-#  end
 end

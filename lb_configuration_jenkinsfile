@@ -1,0 +1,17 @@
+pipeline {
+    agent any
+
+    stages {
+                stage('Configure lb') {
+                    steps {
+                        withCredentials([sshUserPrivateKey(
+                            credentialsId: 'vagrantssh',
+                            keyFileVariable: 'SSH_KEY',
+                            usernameVariable: 'SSH_USER'
+                        )]) {
+                            sh 'cd ansible && ansible-playbook -i /vagrant/inventory lb_install_nginx.yml --private-key $SSH_KEY'
+                      }
+                    }
+                }
+    }
+}

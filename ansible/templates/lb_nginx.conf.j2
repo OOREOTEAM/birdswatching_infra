@@ -4,8 +4,8 @@ events {
 
 http {
     upstream webservers {
-        random;
-        server web.local;
+        server web1.local;
+	    server web2.local;
         
     }
 
