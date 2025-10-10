@@ -20,6 +20,6 @@ resource "aws_security_group" "SG_SubnetJenkins" {
   }
 
   tags = {
-    Name = "Jenkins-Consul-SG"
+    Name = "jenkins-sg"
   }
 }

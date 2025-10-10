@@ -1,6 +1,6 @@
 # Using existing VPC for all resorses
 data "aws_vpc" "main" {
-  id = var.vpc_id
+  id = var.var.common_config.vpc_id
 }
 
 #Using existing IGW
@@ -10,25 +10,25 @@ data "aws_internet_gateway" "main" {
 
 #Using existing Jenkins security group
 data "aws_security_group" "jenkins_sg" {
-  id = var.jenkins_sg
+  id = var.common_config.jenkins_sg
 
 }
 
 #Private subnet for WEB with access to NAT
 resource "aws_subnet" "private_webapp" {
-  vpc_id                  = var.vpc_id
+  vpc_id                  = var.common_config.vpc_id
   cidr_block              = var.private_app_subnet_cidr
   map_public_ip_on_launch = false
-  availability_zone       = var.availability_zone
+  availability_zone       = var.common_config.availability_zone
 
   tags = {
-    Name = "${var.environment}-private-webapp-subnet"
+    Name = "${var.common_config.environment}-private-webapp-subnet"
   }
 }
 
 # Private Route Table for WEB, Consul with NAT
 resource "aws_route_table" "private" {
-  vpc_id = var.vpc_id
+  vpc_id = var.common_config.vpc_id
 
   route {
     cidr_block     = "0.0.0.0/0"
@@ -36,7 +36,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name = "${var.environment}-private-web-consul-rt"
+    Name = "${var.common_config.environment}-private-web-consul-rt"
   }
 }
 
@@ -50,9 +50,9 @@ resource "aws_route_table_association" "private_webapp_assoc" {
 
 #Security_group for web
 resource "aws_security_group" "webapp" {
-  name        = "${var.environment}-webapp-sg"
+  name        = "${var.common_config.environment}-webapp-sg"
   description = "Allow traffic from LB and to DB"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.common_config.vpc_id
 
 
   ingress {
@@ -127,30 +127,30 @@ resource "aws_security_group" "webapp" {
   }
 
   tags = {
-    Name = "${var.environment}-webapp-sg"
+    Name = "${var.common_config.environment}-webapp-sg"
   }
 }
 
 
 #Creating webapp servers using launch templates for autoscaling
 resource "aws_launch_template" "webapp" {
-  name_prefix            = "${var.environment}-webapp-"
+  name_prefix            = "${var.common_config.environment}-webapp-"
   image_id               = var.ami_id
-  instance_type          = var.instance_type
+  instance_type          = var.common_config.instance_type
   vpc_security_group_ids = [aws_security_group.webapp.id]
-  key_name               = var.key_name
+  key_name               = var.common_config.key_name
 
   iam_instance_profile {
     name = var.webapp_profile_name
   }
 
   tags = {
-    Name = "${var.environment}-webapp-instance"
+    Name = "${var.common_config.environment}-webapp-instance"
   }
 }
 
 resource "aws_autoscaling_group" "webapp" {
-  name                = "${var.environment}-webapp-asg"
+  name                = "${var.common_config.environment}-webapp-asg"
   vpc_zone_identifier = [aws_subnet.private_webapp.id]
   desired_capacity    = var.webapp_count
   max_size            = 2
@@ -163,7 +163,7 @@ resource "aws_autoscaling_group" "webapp" {
 
   tag {
     key                 = "Name"
-    value               = "${var.environment}-webapp-asg-instance"
+    value               = "${var.common_config.environment}-webapp-asg-instance"
     propagate_at_launch = true
   }
 }

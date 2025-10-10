@@ -1,28 +1,28 @@
-# Using existing VPC for all resorses
+# # Using existing VPC for all resorses
 data "aws_vpc" "main" {
-  id = var.vpc_id
+  id = var.common_config.vpc_id
 }
 
 #Using existing Jenkins security group
 data "aws_security_group" "jenkins_sg" {
-  id = var.jenkins_sg
+  id = var.common_config.jenkins_sg
 
 }
 #Private subnet for DB without NAT
 resource "aws_subnet" "private_db" {
-  vpc_id                  = var.vpc_id
+  vpc_id                  = var.common_config.vpc_id
   cidr_block              = var.private_db_subnet_cidr
   map_public_ip_on_launch = false
-  availability_zone       = var.availability_zone
+  availability_zone       = var.common_config.availability_zone
 
   tags = {
-    Name = "${var.environment}-private-db-subnet"
+    Name = "${var.common_config.environment}-private-db-subnet"
   }
 }
 
 #Private route table for DB no NAT
 resource "aws_route_table" "database_private" {
-  vpc_id = var.vpc_id
+  vpc_id = var.common_config.vpc_id
 
   route {
     cidr_block     = "0.0.0.0/0"
@@ -30,7 +30,7 @@ resource "aws_route_table" "database_private" {
   }
 
   tags = {
-    Name = "${var.environment}-db-rt"
+    Name = "${var.common_config.environment}-db-rt"
   }
 }
 
@@ -42,9 +42,9 @@ resource "aws_route_table_association" "private_db_assoc" {
 
 #security_group for DB
 resource "aws_security_group" "database" {
-  name        = "${var.environment}-database-sg"
+  name        = "${var.common_config.environment}-database-sg"
   description = "Allow PostgreSQL traffic from the webapp"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.common_config.vpc_id
 
 
   ingress {
@@ -89,7 +89,7 @@ resource "aws_security_group" "database" {
   }
 
   tags = {
-    Name = "${var.environment}-database-sg"
+    Name = "${var.common_config.environment}-database-sg"
   }
 }
 
@@ -97,11 +97,11 @@ resource "aws_security_group" "database" {
 #Creating DB server
 resource "aws_instance" "database" {
   ami                    = var.ami_id_db
-  instance_type          = var.instance_type
+  instance_type          = var.common_config.instance_type
   subnet_id              = aws_subnet.private_db.id
   vpc_security_group_ids = [aws_security_group.database.id]
   iam_instance_profile   = var.ssm_instance_profile_name
-  key_name               = var.key_name
+  key_name               = var.common_config.key_name
 
   ebs_block_device {
     device_name           = "/dev/sdc" #for EBS dara volumes
@@ -110,12 +110,12 @@ resource "aws_instance" "database" {
     delete_on_termination = false #only for database to save volume after deletion
     encrypted             = true
     tags = {
-      Name = "${var.environment}-database-volume"
+      Name = "${var.common_config.environment}-database-volume"
     }
 
   }
 
   tags = {
-    Name = "${var.environment}-database-instance"
+    Name = "${var.common_config.environment}-database-instance"
   }
 }

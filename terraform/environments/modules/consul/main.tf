@@ -1,23 +1,23 @@
 # Using existing VPC for all resorses
 data "aws_vpc" "main" {
-  id = var.vpc_id
+  id = var.common_config.vpc_id
 }
 
 #Using existing Jenkins security group
 data "aws_security_group" "jenkins_sg" {
-  id = var.jenkins_sg
+  id = var.common_config.jenkins_sg
 
 }
 
 #Private subnet for Consul with NAT
 resource "aws_subnet" "private_consul" {
-  vpc_id                  = var.vpc_id
+  vpc_id                  = var.common_config.vpc_id
   cidr_block              = var.private_consul_subnet_cidr
   map_public_ip_on_launch = false
-  availability_zone       = var.availability_zone
+  availability_zone       = var.common_config.availability_zone
 
   tags = {
-    Name = "${var.environment}-private-consul-subnet"
+    Name = "${var.common_config.environment}-private-consul-subnet"
   }
 }
 
@@ -29,9 +29,9 @@ resource "aws_route_table_association" "private_consul_assoc" {
 
 #security group for Consul
 resource "aws_security_group" "consul" {
-  name        = "${var.environment}-consul-sg"
+  name        = "${var.common_config.environment}-consul-sg"
   description = "Allow Consul traffic from within the VPC"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.common_config.vpc_id
 
   #Allow DNS queries within the VPC for service discovery
   ingress {
@@ -97,20 +97,20 @@ resource "aws_security_group" "consul" {
   }
 
   tags = {
-    Name = "${var.environment}-consul-sg"
+    Name = "${var.common_config.environment}-consul-sg"
   }
 }
 
 #Creating consul server
 resource "aws_instance" "consul" {
   ami                    = var.ami_id
-  instance_type          = var.instance_type
+  instance_type          = var.common_config.instance_type
   subnet_id              = aws_subnet.private_consul.id
   vpc_security_group_ids = [aws_security_group.consul.id]
   iam_instance_profile   = var.ssm_instance_profile_name
-  key_name               = var.key_name
+  key_name               = var.common_config.key_name
 
   tags = {
-    Name = "${var.environment}-consul-instance"
+    Name = "${var.common_config.environment}-consul-instance"
   }
 }

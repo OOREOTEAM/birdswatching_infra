@@ -1,8 +1,8 @@
 
-# Using existing VPC for all resorses
-data "aws_vpc" "main" {
-  id = var.vpc_id
-}
+# # Using existing VPC for all resorses
+# data "aws_vpc" "main" {
+#   id = var.vpc_id
+# }
 
 
 #Using existing IGW
@@ -13,13 +13,13 @@ data "aws_internet_gateway" "main" {
 
 #Public subnet for LB
 resource "aws_subnet" "public_lb" {
-  vpc_id                  = var.vpc_id
+  vpc_id                  = var.common_config.vpc_id
   cidr_block              = var.public_subnet_cidr
   map_public_ip_on_launch = true
-  availability_zone       = var.availability_zone
+  availability_zone       = var.common_config.availability_zone
 
   tags = {
-    Name = "${var.environment}-public-lb-subnet"
+    Name = "${var.common_config.environment}-public-lb-subnet"
   }
 }
 
@@ -29,7 +29,7 @@ resource "aws_eip" "nat_eip" {
   domain     = "vpc"
   depends_on = [data.aws_internet_gateway.main]
   tags = {
-    Name = "${var.environment}-nat-eip"
+    Name = "${var.common_config.environment}-nat-eip"
   }
 }
 
@@ -39,16 +39,14 @@ resource "aws_nat_gateway" "main" {
   allocation_id = aws_eip.nat_eip.id
   subnet_id     = aws_subnet.public_lb.id
   tags = {
-    Name = "${var.environment}-nat-gateway"
+    Name = "${var.common_config.environment}-nat-gateway"
   }
   depends_on = [data.aws_internet_gateway.main]
 }
 
-#------------Route tables and assosiation
-
 #Public route table with LB
 resource "aws_route_table" "public" {
-  vpc_id = var.vpc_id
+  vpc_id = var.common_config.vpc_id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -56,7 +54,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "${var.environment}-public-rt"
+    Name = "${var.common_config.environment}-public-rt"
   }
 }
 
@@ -67,19 +65,17 @@ resource "aws_route_table_association" "public_ld_assoc" {
 }
 
 
-#------Security group
-
 #Using existing Jenkins security group
 data "aws_security_group" "jenkins_sg" {
-  id = var.jenkins_sg
+  id = var.common_config.jenkins_sg
 
 }
 
 #Security group for LB
 resource "aws_security_group" "nginx_lb" {
-  name        = "${var.environment}-nginx-lb-sg"
+  name        = "${var.common_config.environment}-nginx-lb-sg"
   description = "Allow inbound HTTP/S and SSH traffic to Nginx LB"
-  vpc_id      = var.vpc_id
+  vpc_id      = var.common_config.vpc_id
 
   ingress {
     from_port   = 80
@@ -160,7 +156,7 @@ resource "aws_security_group" "nginx_lb" {
   }
 
   tags = {
-    Name = "${var.environment}-nginx-lb-sg"
+    Name = "${var.common_config.environment}-nginx-lb-sg"
   }
 }
 
@@ -169,25 +165,25 @@ resource "aws_security_group" "nginx_lb" {
 
 resource "aws_instance" "nginx_lb" {
   ami                         = var.ami_id
-  instance_type               = var.instance_type
+  instance_type               = var.common_config.instance_type
   subnet_id                   = aws_subnet.public_lb.id
   vpc_security_group_ids      = [aws_security_group.nginx_lb.id]
   associate_public_ip_address = true
   iam_instance_profile        = var.ssm_instance_profile_name
-  key_name                    = var.key_name
+  key_name                    = var.common_config.key_name
 
   tags = {
-    Name = "${var.environment}-nginx-load-balancer"
+    Name = "${var.common_config.environment}-nginx-load-balancer"
   }
 }
 
-#Crating Elastic IP for load balancer
+#Creating Elastic IP for load balancer
 resource "aws_eip" "lb_eip" {
   domain     = "vpc"
   depends_on = [data.aws_internet_gateway.main]
 
   tags = {
-    Name = "${var.environment}-lb-eip"
+    Name = "${var.common_config.environment}-lb-eip"
   }
 }
 
