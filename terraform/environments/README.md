@@ -28,7 +28,7 @@ It configures the backend to point to the correct state file.
 
 ```bash
 make init             #in this case default ENV=stage_01 (stage_1 workspace)
-make init ENV=dev-01  #in this case ENV=dev_01 (dev_1 workspace)
+make init ENV=dev_01  #in this case ENV=dev_01 (dev_1 workspace)
 
 ```
 
