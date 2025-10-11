@@ -1,5 +1,5 @@
 - name: Setup Consul
-  hosts: _dev_consul_instance  # or _stage_consul_instance
+  hosts: _dev_01_consul_instance  # or _stage_consul_instance
   become: yes
   gather_facts: yes
   vars:
