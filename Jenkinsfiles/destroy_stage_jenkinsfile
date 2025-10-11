@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Manual Approval for Destroy') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    input(
+                        id: 'destroy-approval',
+                        message: "You are about to DESTROY the stage environment, choose option",,
+                        ok: 'Yes, destroy',
+                        cancel: 'No, Abort Pipeline'
+                    )
+                }
+            }
+        }
+
+        stage('Terraform Destroy') {
+            steps {
+                script {
+                    dir('terraform/environments') {
+                        echo "Destroying Terraform infrastructure for stage"
+                            withCredentials([[
+                            $class: 'AmazonWebServicesCredentialsBinding',
+                            credentialsId: 'aws_credentials',
+                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']])
+                        {
+                            sh "make destroy" //stage_01 is default enviroment no ENV variable needed
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
