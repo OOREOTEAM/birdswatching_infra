@@ -12,6 +12,6 @@ variable "common_config" {
 
 variable "consul_ip" {
   description = "consul_ip"
-  type = string
-    
+  type        = string
+
 }

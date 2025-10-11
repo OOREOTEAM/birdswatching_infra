@@ -1,6 +1,6 @@
 resource "aws_route53_zone" "private_zone" {
-  name         = "${var.common_config.environment}.internal"
-  comment      = "Private hosted zone for ${var.common_config.environment} environment"
+  name    = "${var.common_config.environment}.internal"
+  comment = "Private hosted zone for ${var.common_config.environment} environment"
 
   vpc {
     vpc_id = var.common_config.vpc_id
@@ -10,7 +10,7 @@ resource "aws_route53_zone" "private_zone" {
 
   tags = {
     Name = "${var.common_config.environment}-route53"
-    
+
   }
 }
 

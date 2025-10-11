@@ -8,7 +8,7 @@ output "consul_sg_id" {
   value       = aws_security_group.consul.id
 }
 
-output private_ip {
+output "private_ip" {
   description = "Consul private ip"
-  value=aws_instance.consul.private_ip
+  value       = aws_instance.consul.private_ip
 }
