@@ -1,8 +1,8 @@
 #S3 bucket to save the pictures
 
 resource "aws_s3_bucket" "pictures" {
-  bucket = "${var.environment}-webapp-pictures"
-
+  bucket = "${replace(var.environment, "_", "-")}-webapp-pictures"
+  
   tags = {
     Name = "${var.environment}-pictures-bucket"
   }
