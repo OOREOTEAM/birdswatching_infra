@@ -21,7 +21,7 @@ pipeline {
                 ]) { 
                     sh '''
                     ansible-inventory -i ansible/aws_ec2.yml --graph
-                    ansible all -i ansible/aws_ec2.yml -m ping -u ubuntu --private-key "$SSH_KEY" --limit _dev_database_instance
+                    ansible all -i ansible/aws_ec2.yml -m ping -u ubuntu --private-key "$SSH_KEY" --limit _dev_01-database-instance
                     '''
                 }
             }

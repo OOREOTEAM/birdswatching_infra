@@ -1,6 +1,6 @@
 ---
 - name: Install and configure nginx + postgresql client
-  hosts: _dev_webapp_asg_instance
+  hosts: _dev_01-webapp-asg
   become: yes
 
   tasks:
