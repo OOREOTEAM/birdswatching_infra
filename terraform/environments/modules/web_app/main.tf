@@ -1,6 +1,6 @@
 # Using existing VPC for all resorses
 data "aws_vpc" "main" {
-  id = var.var.common_config.vpc_id
+  id = var.common_config.vpc_id
 }
 
 #Using existing IGW

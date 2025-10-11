@@ -8,7 +8,7 @@ ami_id_db                  = "ami-0d3c68351da102c84"
 igw_id                     = "igw-0ff63fe1fa109157a"
 
 common_config = {
-  environment       = "stage_01"
+  environment       = "stage-01"
   availability_zone = "eu-central-1b"
   vpc_id            = "vpc-034d5a9addc2f04fe"
   jenkins_sg        = "sg-0d07356650954f12c"
