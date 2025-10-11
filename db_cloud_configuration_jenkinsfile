@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('aws_access_key_id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
+        AWS_DEFAULT_REGION    = 'eu-central-1'
+        ANSIBLE_CONFIG        = 'ansible/ansible.cfg'
+    }
+
+    stages {
+
+        stage('Ping EC2 via Ansible') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'oreo_ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) { 
+                    sh '''
+                    ansible-inventory -i ansible/aws_ec2.yml --graph
+                    ansible all -i ansible/aws_ec2.yml -m ping -u ubuntu --private-key "$SSH_KEY" --limit _dev_database_instance
+                    '''
+                }
+            }
+        }
+
+        stage('Configure db') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'dbuser', variable: 'DB_USER'),
+                    string(credentialsId: 'dbpass', variable: 'DB_PASS'),
+                    string(credentialsId: 'dbname', variable: 'DB_NAME'),
+                    sshUserPrivateKey(
+                        credentialsId: 'oreo_ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    sh '''
+                    ansible-playbook -i ansible/aws_ec2.yml ansible/install_psql.yml -u ubuntu \
+                    --private-key "$SSH_KEY" \
+                    -e "db_user=${DB_USER}" \
+                    -e "db_pass=${DB_PASS}" \
+                    -e "db_name=${DB_NAME}"
+                    '''
+                }
+            }
+        }
+
+    }
+}

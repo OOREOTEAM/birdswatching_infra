@@ -8,23 +8,23 @@
       apt:
         name: nginx
         state: latest
-    
+
     - name: Copy Nginx configuration file
       template:
         src: templates/web_nginx.conf.j2
         dest: /etc/nginx/nginx.conf
       notify: Reload Nginx
-  
+
     - name: Install postgresql client
       apt:
         name: postgresql-client-14
-        state: present        
-    
+        state: present
+
     - name: Copy frontend build
       copy:
         src: ../flask
         dest: .
-    
+
     - name: Copy .env
       template:
         src: templates/.env.j2
@@ -52,9 +52,15 @@
     - name: Create venv and install requirements.txt
       ansible.builtin.pip:
         requirements: /home/ubuntu/flask/requirements.txt
-        virtualenv: /home/ubuntu/flask/flasktest 
+        virtualenv: /home/ubuntu/flask/flasktest
         virtualenv_command: python3 -m venv flasktest
       become: yes
+
+    - name: Run Flask database migrations
+      command: /home/ubuntu/flask/flasktest/bin/flask db upgrade -d migrations
+      args:
+        chdir: /home/ubuntu/flask/birdproject
+      become_user: ubuntu
 
     - name: Reload systemd
       command: systemctl daemon-reload
@@ -64,14 +70,13 @@
       service:
         name: flaskbird
         state: started
-    
+
     - name: Change ownership of virtualenv
       ansible.builtin.file:
         path: /home/ubuntu/flask/flasktest
         owner: ubuntu
         group: ubuntu
         recurse: yes
-
 
   handlers:
     - name: Reload Nginx
