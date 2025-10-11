@@ -11,4 +11,3 @@ hostnames:
 compose:
   ansible_host: private_ip_address
   ansible_user: ubuntu
-

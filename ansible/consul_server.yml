@@ -1,5 +1,5 @@
 - name: Setup Consul
-  hosts: _dev_01_consul_instance  # or _stage_consul_instance
+  hosts: _dev_01_consul_instance # or _stage_consul_instance
   become: yes
   gather_facts: yes
   vars:
@@ -8,30 +8,28 @@
     consul_data_dir: /opt/consul/data
 
   tasks:
-
     - name: Ensure consul user exists
       user:
-        name: "{{ consul_user }}"
+        name: '{{ consul_user }}'
         shell: /bin/false
         system: yes
         state: present
 
     - name: Ensure Consul data directory exists
       file:
-        path: "{{ consul_data_dir }}"
+        path: '{{ consul_data_dir }}'
         state: directory
-        owner: "{{ consul_user }}"
-        group: "{{ consul_group }}"
+        owner: '{{ consul_user }}'
+        group: '{{ consul_group }}'
         mode: '0755'
 
     - name: Deploy Consul config
       template:
         src: templates/consul_server.hcl.j2
         dest: /etc/consul.d/consul.hcl
-        owner: "{{ consul_user }}"
-        group: "{{ consul_group }}"
+        owner: '{{ consul_user }}'
+        group: '{{ consul_group }}'
         mode: '0644'
-        
 
     - name: Deploy Consul systemd service
       template:
@@ -40,7 +38,6 @@
         owner: root
         group: root
         mode: '0644'
-        
 
     - name: Reload systemd
       command: systemctl daemon-reload
