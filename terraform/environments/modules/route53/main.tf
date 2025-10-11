@@ -14,6 +14,7 @@ resource "aws_route53_zone" "private_zone" {
   }
 }
 
+# Add Consul dns record
 resource "aws_route53_record" "consul" {
   zone_id = aws_route53_zone.private_zone.zone_id
   name    = "${var.common_config.environment}.consul"
