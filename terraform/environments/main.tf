@@ -79,3 +79,10 @@ module "consul" {
   private_consul_subnet_cidr = var.private_consul_subnet_cidr
   ssm_instance_profile_name  = module.iam.ssm_instance_profile_name
 }
+
+#The module for PrivateDNS service creation 
+module "route53" {
+  source  = "./modules/route53"
+  common_config              = var.common_config
+  consul_ip                  = module.consul.private_ip
+}
