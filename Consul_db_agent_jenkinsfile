@@ -9,7 +9,7 @@ pipeline {
 
     stages {
 
-        stage('Configure Consul server as service') {
+        stage('Configure Consul db agent as service') {
             steps {
                 withCredentials([
                     sshUserPrivateKey(
@@ -21,7 +21,7 @@ pipeline {
                     dir('ansible') {
                         sh '''
                         ansible-inventory -i aws_ec2.yml --graph
-                        ansible-playbook -i aws_ec2.yml consul_server.yml -u ubuntu --private-key "$SSH_KEY" --limit _dev_01_database_instance
+                        ansible-playbook -i aws_ec2.yml consul_db_agent.yml -u ubuntu --private-key "$SSH_KEY" --limit _dev_01_database_instance -e "env_name=dev-01"
                         '''
                     }
                 }
