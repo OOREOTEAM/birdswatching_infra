@@ -4,8 +4,8 @@ Requires=network-online.target
 After=network-online.target
 
 [Service]
-User=consul
-Group=consul
+User=root
+Group=root
 ExecStart=/usr/bin/consul-template -config /etc/consul.d/consul-template-config.hcl
 Restart=on-failure
 
