@@ -101,6 +101,7 @@ pipeline {
                                     ok: 'Yes, destroy',
                                     cancel: 'No, Abort Pipeline'
                                 )
+                            }
                         }
                     }
                     stage('Terraform Destroy') {
