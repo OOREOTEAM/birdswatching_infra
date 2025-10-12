@@ -60,7 +60,7 @@
 
     - name: Configure systemd-resolved for Consul DNS
       template:
-        src: /templates/consul.conf.j2
+        src: templates/consul.conf.j2
         dest: /etc/systemd/resolved.conf.d/consul.conf
         owner: root
         group: root
