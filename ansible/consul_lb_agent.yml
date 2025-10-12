@@ -59,7 +59,7 @@
         mode: '0644'
 
     - name: Deploy Consul-template load-balancer config
-      template:
+      copy:
         src: templates/load_balancer_template.hcl
         dest: /etc/nginx/load-balancer.conf.ctmpl
         owner: '{{ consul_user }}'
