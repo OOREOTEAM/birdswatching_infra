@@ -1,0 +1,18 @@
+# Consul agent configuration for Web node
+node_name = "{{ env_name }}-web-{{ node_index }}"
+data_dir = "/opt/consul/data"
+server = false
+bind_addr = "{{ ansible_default_ipv4.address }}"
+retry_join = ["{{ env_name }}.consul.{{ env_name }}.internal"]
+
+service {
+  name = "app"
+  port = 5000
+  tags = ["app"]
+  check {
+    name     = "App"
+    tcp      = "localhost:5000"
+    interval = "10s"
+    timeout  = "1s"
+  }
+}
