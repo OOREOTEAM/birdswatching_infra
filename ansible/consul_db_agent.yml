@@ -6,6 +6,7 @@
     consul_user: consul
     consul_group: consul
     consul_data_dir: /opt/consul/data
+    env_name: "{{ lookup('env','env_name') }}"
 
   tasks:
     - name: Ensure consul user exists
