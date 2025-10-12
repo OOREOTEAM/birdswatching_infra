@@ -60,7 +60,7 @@
 
     - name: Deploy Consul-template load-balancer config
       template:
-        src: templates/load_balancer_template.hcl.j2
+        src: templates/load_balancer_template.hcl
         dest: /etc/nginx/load-balancer.conf.ctmpl
         owner: '{{ consul_user }}'
         group: '{{ consul_group }}'
