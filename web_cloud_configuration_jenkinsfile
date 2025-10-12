@@ -12,7 +12,7 @@ pipeline {
         stage('Clone repo via SSH') {
             steps {
                 dir('flask') {
-                    git branch: 'OREO-80-validation-birdwatching-deployment-in-aws-cloud',
+                    git branch: 'OREO-86-establish-connection-between-flask-app-and-s-3-bucket',
                         url: 'git@github.com:OOREOTEAM/birdswatching_app.git',
                         credentialsId: '92ebdc9b-acc7-462a-b02d-abe695f18c40'
                 }
