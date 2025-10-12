@@ -1,7 +1,8 @@
 # Consul agent configuration for LB node
 node_name = "{{ env_name }}-lb"
 data_dir = "/opt/consul/data"
-server = falsebind_addr = "{{ ansible_default_ipv4.address }}"
+server = false
+bind_addr = "{{ ansible_default_ipv4.address }}"
 retry_join = ["{{ env_name }}.consul.{{ env_name }}.internal"]
 
 service {
