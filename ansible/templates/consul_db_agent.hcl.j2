@@ -1,5 +1,5 @@
 # Consul agent configuration for DB node
-node_name = "db-1"
+node_name = "{{ env_name }}-db"
 data_dir = "/opt/consul/data"
 server = false
 bind_addr = "{{ ansible_default_ipv4.address }}"
