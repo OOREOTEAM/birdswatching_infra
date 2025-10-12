@@ -80,6 +80,6 @@
 
     - name: Enable and start Consul
       systemd:
-        name: Consul-template
+        name: consul-template
         state: started
         enabled: yes
