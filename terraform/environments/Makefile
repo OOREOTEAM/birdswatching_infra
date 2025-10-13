@@ -9,6 +9,6 @@ plan: init
 	terraform plan -var-file=workspace_vars/${ENV}.tfvars
 
 apply: init
-	terraform apply -var-file=workspace_vars/${ENV}.tfvars
+	terraform apply -auto-approve -var-file=workspace_vars/${ENV}.tfvars
 destroy: init
-	terraform destroy -var-file=workspace_vars/${ENV}.tfvars
+	terraform destroy -auto-approve -var-file=workspace_vars/${ENV}.tfvars
