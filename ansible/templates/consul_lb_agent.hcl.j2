@@ -1,0 +1,19 @@
+# Consul agent configuration for LB node
+node_name = "{{ env_name }}-lb"
+data_dir = "/opt/consul/data"
+server = false
+bind_addr = "{{ ansible_default_ipv4.address }}"
+retry_join = ["{{ env_name }}.consul.{{ env_name }}.internal"]
+
+service {
+  name = "nginx"
+  port = 80
+  tags = ["lb"]
+  check {
+    name     = "nginx"
+    tcp      = "localhost:80"
+    interval = "10s"
+    timeout  = "1s"
+  }
+}
+
