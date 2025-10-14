@@ -8,7 +8,7 @@ pipeline {
         env_name= 'dev-01'
     }
     parameters {
-         choice(name: 'ENV_NAME', choices: ['dev-01', 'stage-01'], description: 'Select environment')
+         choice(name: 'ENV_NAME', choices: ['stage-01','dev-01'], description: 'Select environment')
    }
     stages {
 
