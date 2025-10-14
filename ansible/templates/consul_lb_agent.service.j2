@@ -6,7 +6,7 @@ After=network-online.target
 [Service]
 User=consul
 Group=consul
-ExecStart=/usr/bin/consul agent -config-dir=/etc/consul.d
+ExecStart=/usr/bin/consul agent -config-file=/etc/consul.d/lb.hcl
 Restart=on-failure
 
 [Install]
