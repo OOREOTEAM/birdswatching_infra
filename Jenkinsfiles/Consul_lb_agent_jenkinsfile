@@ -26,7 +26,7 @@ pipeline {
                     dir('ansible') {
                         sh '''
                         ansible-inventory -i aws_ec2.yml --graph
-                        ansible-playbook -i aws_ec2.yml consul_lb_agent.yml -u ubuntu --private-key "$SSH_KEY"
+                        ansible-playbook -i aws_ec2.yml consul_lb_agent.yml -u ubuntu --private-key "$SSH_KEY" -e env_name=$ENV_NAME
                         '''
                     }
                 }
