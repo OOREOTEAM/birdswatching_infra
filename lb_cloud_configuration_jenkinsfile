@@ -1,14 +1,21 @@
 pipeline {
     agent any
 
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('aws_access_key_id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
+        AWS_DEFAULT_REGION    = 'eu-central-1'
+
+    }
+
+    parameters {
+         choice(name: 'ENV_NAME', choices: ['stage-01','dev-01'], description: 'Select environment')
+   }
+    
     stages {
                 stage('Configure web') {
                      steps {
                         withCredentials([
-                            string(credentialsId: 'dbuser', variable: 'DB_USER'),
-                            string(credentialsId: 'dbpass', variable: 'DB_PASS'),
-                            string(credentialsId: 'dbname', variable: 'DB_NAME'),
-                            string(credentialsId: 'default_flask_adminpass', variable: 'FLASK_PASS'),
                             sshUserPrivateKey(
                                 credentialsId: 'oreo_ssh',
                                 keyFileVariable: 'SSH_KEY',
@@ -18,10 +25,8 @@ pipeline {
                         sh '''
                             ansible-playbook -i ansible/aws_ec2.yml ansible/lb_install_nginx.yml -u ubuntu \
                             --private-key "$SSH_KEY" \
-                            -e "db_user=${DB_USER}" \
-                            -e "db_pass=${DB_PASS}" \
-                            -e "db_name=${DB_NAME}" \
-                            -e "flask_pass=${FLASK_PASS}" \
+                            --limit _${ENV_NAME}_nginx_load_balancer \
+                            -e "env_name=${ENV_NAME}" \
                             '''
                       }
                   }

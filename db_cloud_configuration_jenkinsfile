@@ -8,6 +8,10 @@ pipeline {
         ANSIBLE_CONFIG        = 'ansible/ansible.cfg'
     }
 
+    parameters {
+         choice(name: 'ENV_NAME', choices: ['stage-01','dev-01'], description: 'Select environment')
+   }
+
     stages {
 
         stage('Ping EC2 via Ansible') {
@@ -21,7 +25,7 @@ pipeline {
                 ]) { 
                     sh '''
                     ansible-inventory -i ansible/aws_ec2.yml --graph
-                    ansible all -i ansible/aws_ec2.yml -m ping -u ubuntu --private-key "$SSH_KEY" --limit _dev_01_database_instance
+                    ansible all -i ansible/aws_ec2.yml -m ping -u ubuntu --private-key "$SSH_KEY"
                     '''
                 }
             }
@@ -42,9 +46,11 @@ pipeline {
                     sh '''
                     ansible-playbook -i ansible/aws_ec2.yml ansible/db_install.yml -u ubuntu \
                     --private-key "$SSH_KEY" \
+                    --limit _${ENV_NAME}_database_instance \
                     -e "db_user=${DB_USER}" \
                     -e "db_pass=${DB_PASS}" \
-                    -e "db_name=${DB_NAME}"
+                    -e "db_name=${DB_NAME}" \
+                    -e "env_name=${ENV_NAME}"
                     '''
                 }
             }

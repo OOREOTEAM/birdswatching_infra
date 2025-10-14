@@ -1,6 +1,6 @@
 ---
-- name: Install PostgreSQL 14
-  hosts: _dev_01_database_instance
+- name: Install PostgreSQL and configure database
+  hosts: _{{ env_name | replace('-', '_') }}_database_instance
   become: yes
 
   tasks:

@@ -1,18 +1,26 @@
 pipeline {
     agent any
 
+    parameters {
+        string(name: 'WEB_GROUP', defaultValue: '', description: 'Enter the name of instance or group of instances')
+    }
+
     environment {
         AWS_ACCESS_KEY_ID     = credentials('aws_access_key_id')
         AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
         AWS_DEFAULT_REGION    = 'eu-central-1'
     }
 
+    parameters {
+         choice(name: 'ENV_NAME', choices: ['stage-01','dev-01'], description: 'Select environment')
+   }
+    
     stages {
 
         stage('Clone repo via SSH') {
             steps {
                 dir('flask') {
-                    git branch: 'OREO-86-establish-connection-between-flask-app-and-s-3-bucket',
+                    git branch: 'main',
                         url: 'git@github.com:OOREOTEAM/birdswatching_app.git',
                         credentialsId: '92ebdc9b-acc7-462a-b02d-abe695f18c40'
                 }
@@ -20,30 +28,32 @@ pipeline {
         }
 
         stage('Configure web') {
-                     steps {
-                        withCredentials([
-                            string(credentialsId: 'dbuser', variable: 'DB_USER'),
-                            string(credentialsId: 'dbpass', variable: 'DB_PASS'),
-                            string(credentialsId: 'dbname', variable: 'DB_NAME'),
-                            string(credentialsId: 'default_flask_adminpass', variable: 'FLASK_PASS'),
-                            sshUserPrivateKey(
-                                credentialsId: 'oreo_ssh',
-                                keyFileVariable: 'SSH_KEY',
-                                usernameVariable: 'SSH_USER'
-                            )
-                        ]) {
-                        sh '''
+            steps {
+                withCredentials([
+                    string(credentialsId: 'dbuser', variable: 'DB_USER'),
+                    string(credentialsId: 'dbpass', variable: 'DB_PASS'),
+                    string(credentialsId: 'dbname', variable: 'DB_NAME'),
+                    string(credentialsId: 'default_flask_adminpass', variable: 'FLASK_PASS'),
+                    sshUserPrivateKey(
+                        credentialsId: 'oreo_ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    sh '''
                         export ANSIBLE_HOST_KEY_CHECKING=False
-                            ansible-inventory -i ansible/aws_ec2.yml --graph
-                            ansible-playbook -i ansible/aws_ec2.yml ansible/web_install_nginx.yml -u ubuntu --private-key "$SSH_KEY" --limit _dev_01_webapp_asg_instance \
+                        ansible-inventory -i ansible/aws_ec2.yml --graph
+                        ansible-playbook -i ansible/aws_ec2.yml ansible/web_install_nginx.yml -u ubuntu \
                             --private-key "$SSH_KEY" \
+                            --limit _${ENV_NAME}_webapp_asg_instance \
                             -e "db_user=${DB_USER}" \
                             -e "db_pass=${DB_PASS}" \
                             -e "db_name=${DB_NAME}" \
                             -e "flask_pass=${FLASK_PASS}" \
-                            '''
-                      }
-                  }
+                            -e "env_name=${ENV_NAME}"
+                    '''
                 }
-          }
+            }
+        }
+    }
 }
