@@ -45,7 +45,6 @@ pipeline {
                         ansible-inventory -i ansible/aws_ec2.yml --graph
                         ansible-playbook -i ansible/aws_ec2.yml ansible/web_install_nginx.yml -u ubuntu \
                             --private-key "$SSH_KEY" \
-                            --limit _${ENV_NAME}_webapp_asg_instance \
                             -e "db_user=${DB_USER}" \
                             -e "db_pass=${DB_PASS}" \
                             -e "db_name=${DB_NAME}" \

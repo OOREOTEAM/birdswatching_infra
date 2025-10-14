@@ -46,7 +46,6 @@ pipeline {
                     sh '''
                     ansible-playbook -i ansible/aws_ec2.yml ansible/db_install.yml -u ubuntu \
                     --private-key "$SSH_KEY" \
-                    --limit _${ENV_NAME}_database_instance \
                     -e "db_user=${DB_USER}" \
                     -e "db_pass=${DB_PASS}" \
                     -e "db_name=${DB_NAME}" \

@@ -25,7 +25,6 @@ pipeline {
                         sh '''
                             ansible-playbook -i ansible/aws_ec2.yml ansible/lb_install_nginx.yml -u ubuntu \
                             --private-key "$SSH_KEY" \
-                            --limit _${ENV_NAME}_nginx_load_balancer \
                             -e "env_name=${ENV_NAME}" \
                             '''
                       }
