@@ -8,7 +8,7 @@ pipeline {
     }
 
 
-properties([
+options ([
     parameters([
         choice(name: 'ENV_NAME', choices: ['dev-01', 'stage-01'], description: 'Select environment'),
       ])
