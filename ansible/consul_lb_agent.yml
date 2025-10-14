@@ -1,5 +1,5 @@
 - name: Setup Consul
-  hosts: _dev_01_nginx_load_balancer # or _stage_consul_instance
+  hosts: "_{{ env_name | replace('-', '_') }}_nginx_load_balancer"
   become: yes
   gather_facts: yes
   vars:
