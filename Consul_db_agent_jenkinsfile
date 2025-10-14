@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('aws_access_key_id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
+        AWS_DEFAULT_REGION    = 'eu-central-1'
+        env_name= 'dev-01'
+    }
+
+    stages {
+
+        stage('Configure Consul db agent as service') {
+            steps {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'oreo_ssh',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
+                    dir('ansible') {
+                        sh '''
+                        ansible-inventory -i aws_ec2.yml --graph
+                        ansible-playbook -i aws_ec2.yml consul_db_agent.yml -u ubuntu --private-key "$SSH_KEY"
+                        '''
+                    }
+                }
+            }
+        }
+
+    }
+}

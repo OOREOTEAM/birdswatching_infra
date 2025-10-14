@@ -10,9 +10,6 @@
 # Crash log files
 crash.log
 
-# Variable files (if they contain sensitive data and are not meant to be shared)
-*.tfvars
-*.tfvars.json
 
 # Saved plan files
 *.tfplan

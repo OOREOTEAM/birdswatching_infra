@@ -1,4 +1,9 @@
-output "jenkins_url" {
-  description = "The URL to access the Jenkins web UI"
-  value       = "http://${module.jenkins_server.private}:8080"
+output "vpc_id" {
+  description = "The BirdWatching-VPC id"
+  value = module.network.vpc_id
+}
+
+output "gw_main" {
+  description = "The internet gateway id"
+  value = module.network.gw_main
 }

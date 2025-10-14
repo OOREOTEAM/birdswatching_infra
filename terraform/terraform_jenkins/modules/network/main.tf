@@ -4,7 +4,7 @@ resource "aws_vpc" "main_vpc" {
   instance_tenancy = "default"
 
   tags = {
-    Name = var.vpc_name
+    Name = "BirdWatching-VPC"
   }
 }
 
@@ -25,7 +25,7 @@ resource "aws_subnet" "private" {
   cidr_block        = var.private_subnet_cidr
   availability_zone = "eu-central-1c"
   tags = {
-    Name = "private-subnet-Jenkins"
+    Name = "private-subnet-jenkins"
   }
 }
 
@@ -50,10 +50,9 @@ resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat_eip.id
   subnet_id     = aws_subnet.public.id
   tags = {
-    Name = "NAT-gateway"
+    Name = "jenkins-nat-gateway"
   }
 }
-
 
 #Route Table for public subnet
 resource "aws_route_table" "rt_sub_public" {
@@ -86,7 +85,7 @@ resource "aws_route_table" "rt_sub_private" {
   }
 
   tags = {
-    Name = "private-route-tableT"
+    Name = "private-jenkins-route-table"
   }
 }
 

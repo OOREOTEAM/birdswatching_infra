@@ -1,0 +1,73 @@
+- name: Setup Consul
+  hosts: _dev_01_webapp_asg_instance # or _stage_consul_instance
+  become: yes
+  gather_facts: yes
+  vars:
+    consul_user: consul
+    consul_group: consul
+    consul_data_dir: /opt/consul/data
+    env_name: "{{ lookup('env','env_name') }}"
+
+  tasks:
+    - name: Ensure consul user exists
+      user:
+        name: '{{ consul_user }}'
+        shell: /bin/false
+        system: yes
+        state: present
+
+    - name: Ensure Consul data directory exists
+      file:
+        path: '{{ consul_data_dir }}'
+        state: directory
+        owner: '{{ consul_user }}'
+        group: '{{ consul_group }}'
+        mode: '0755'
+
+    - name: Deploy Consul config
+      template:
+        src: templates/consul_web_agent.hcl.j2
+        dest: /etc/consul.d/web.hcl
+        owner: '{{ consul_user }}'
+        group: '{{ consul_group }}'
+        mode: '0644'
+      vars:
+        node_index: "{{ groups['_dev_01_webapp_asg_instance'].index(inventory_hostname) + 1 }}"
+
+    - name: Deploy Consul systemd service
+      template:
+        src: templates/consul_web_agent.service.j2
+        dest: /etc/systemd/system/consul.service
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Reload systemd
+      command: systemctl daemon-reload
+      become: yes
+
+    - name: Enable and start Consul
+      systemd:
+        name: consul
+        state: started
+        enabled: yes
+
+    - name: Create resolved.conf.d directory
+      file:
+        path: /etc/systemd/resolved.conf.d
+        state: directory
+        mode: '0755'
+
+    - name: Configure systemd-resolved for Consul DNS
+      template:
+        src: templates/consul.conf.j2
+        dest: /etc/systemd/resolved.conf.d/consul.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Restart systemd-resolved
+      systemd:
+        name: systemd-resolved
+        state: restarted
+        enabled: true
