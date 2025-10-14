@@ -5,7 +5,7 @@ pipeline {
         AWS_ACCESS_KEY_ID     = credentials('aws_access_key_id')
         AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
         AWS_DEFAULT_REGION    = 'eu-central-1'
-        env_name= 'dev-01'
+        
     }
     parameters {
          choice(name: 'ENV_NAME', choices: ['stage-01','dev-01'], description: 'Select environment')
