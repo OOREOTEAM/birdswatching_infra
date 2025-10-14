@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 6.0"
     }
+    datadog = {
+      source  = "DataDog/datadog"
+      version = "~> 3.0"
+    }
   }
 }
 
@@ -18,6 +22,55 @@ provider "aws" {
   }
 }
 
+provider "datadog" {
+  api_key = local.datadog_keys.api_keyS
+  app_key = local.datadog_keys.app_key
+}
+
+data "aws_secretsmanager_secret_version" "datadog_creds" {
+  secret_id = "arn:aws:secretsmanager:eu-central-1:455185968385:secret:datadog/keys-kA5yxk" 
+}
+
+locals {
+  datadog_keys = jsondecode(data.aws_secretsmanager_secret_version.datadog_creds.secret_string)
+}
+
+resource "aws_ssm_document" "install_datadog_agent" {
+  name          = "InstallDataDogAgent-Script"
+  document_type = "Command"
+  content = jsonencode({
+    schemaVersion = "2.2"
+    description   = "Install DataDog Agent"
+    mainSteps = [
+      {
+        action = "aws:runCommand"
+        name   = "installDataDogAgent"
+        inputs = {
+          DocumentName = "AWS-RunShellScript"
+          Parameters = {
+            commands = [
+              "DD_API_KEY=${local.datadog_keys.api_key} DD_SITE=\"datadoghq.eu\" DD_REMOTE_UPDATES=true \\ bash -c \"$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)\""
+            ]
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_ssm_association" "install_datadog_on_all" {
+  name = aws_ssm_document.install_datadog_agent.name
+  targets {
+    key    = "tag:Name"
+    values = [ 
+    "${var.common_config.environment}-webapp-asg-instance", 
+    "${var.common_config.environment}-db-instance", 
+    "${var.common_config.environment}-consul-instance",
+    "${var.common_config.environment}-webapp-instance",
+    "${var.common_config.environment}-nginx-load-balancer"
+    ]
+  }
+}
 
 #The s3_bucket_pictures includes creation of S3 bucket for webapp
 module "s3_bucket_pictures" {
@@ -86,3 +139,5 @@ module "route53" {
   common_config = var.common_config
   consul_ip     = module.consul.private_ip
 }
+
+
