@@ -1,5 +1,5 @@
 - name: Setup Consul
-  hosts: _dev_01_webapp_asg_instance # or _stage_consul_instance
+  hosts: "_{{ env_name | replace('-', '_') }}_webapp_asg_instance"
   become: yes
   gather_facts: yes
   vars:
@@ -7,6 +7,7 @@
     consul_group: consul
     consul_data_dir: /opt/consul/data
     env_name: "{{ lookup('env','env_name') }}"
+    webapp_group: "_{{ env_name | replace('-', '_') }}_webapp_asg_instance"
 
   tasks:
     - name: Ensure consul user exists
@@ -32,7 +33,7 @@
         group: '{{ consul_group }}'
         mode: '0644'
       vars:
-        node_index: "{{ groups['_dev_01_webapp_asg_instance'].index(inventory_hostname) + 1 }}"
+        node_index: '{{ groups[webapp_group].index(inventory_hostname) + 1 }}'
 
     - name: Deploy Consul systemd service
       template:

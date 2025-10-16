@@ -1,5 +1,5 @@
 - name: Setup Consul
-  hosts: _dev_01_database_instance # or _stage_consul_instance
+  hosts: "_{{ env_name | replace('-', '_') }}_database_instance"
   become: yes
   gather_facts: yes
   vars:
