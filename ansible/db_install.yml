@@ -1,6 +1,6 @@
 ---
-- name: Install PostgreSQL 14
-  hosts: db
+- name: Install PostgreSQL and configure database
+  hosts: _{{ env_name | replace('-', '_') }}_database_instance
   become: yes
 
   tasks:
@@ -24,13 +24,6 @@
         path: /etc/postgresql/14/main/pg_hba.conf
         insertafter: EOF
         line: 'host    all             all             0.0.0.0/0               md5'
-      notify: Restart postgresql
-
-    - name: allow local postgres user authentication via password
-      ansible.builtin.lineinfile:
-        path: /etc/postgresql/14/main/pg_hba.conf
-        insertafter: EOF
-        line: 'local   all             postgres                                md5'
       notify: Restart postgresql
 
     - name: Ensure PostgreSQL is running

@@ -1,6 +1,6 @@
 ---
 - name: Install and configure nginx + postgresql client
-  hosts: web_servers
+  hosts: _{{ env_name | replace('-', '_') }}_webapp_asg_instance
   become: yes
 
   tasks:
@@ -23,7 +23,7 @@
 
     - name: Copy frontend build
       copy:
-        src: ../week1/rhnatyshyn/flask
+        src: ../flask
         dest: .
 
     - name: Copy .env
@@ -52,16 +52,16 @@
 
     - name: Create venv and install requirements.txt
       ansible.builtin.pip:
-        requirements: /home/vagrant/flask/requirements.txt
-        virtualenv: /home/vagrant/flask/flasktest
+        requirements: /home/ubuntu/flask/requirements.txt
+        virtualenv: /home/ubuntu/flask/flasktest
         virtualenv_command: python3 -m venv flasktest
       become: yes
 
-    - name: Create symlink for static folder
-      ansible.builtin.file:
-        src: /vagrant
-        dest: /home/vagrant/flask/birdproject/static
-        state: link
+    - name: Run Flask database migrations
+      command: /home/ubuntu/flask/flasktest/bin/flask db upgrade -d migrations
+      args:
+        chdir: /home/ubuntu/flask/birdproject
+      become_user: ubuntu
 
     - name: Reload systemd
       command: systemctl daemon-reload
@@ -74,9 +74,9 @@
 
     - name: Change ownership of virtualenv
       ansible.builtin.file:
-        path: /home/vagrant/flask/flasktest
-        owner: vagrant
-        group: vagrant
+        path: /home/ubuntu/flask/flasktest
+        owner: ubuntu
+        group: ubuntu
         recurse: yes
 
   handlers:
